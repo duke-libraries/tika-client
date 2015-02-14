@@ -1,26 +1,27 @@
 require "uri"
 require "net/http"
 require "delegate"
-# require "mime-types"
 
 module Tika
-  # Executes an API method
   class Request < SimpleDelegator
 
-    attr_reader :connection # , :endpoint, :http_request
-    
-    # def self.execute(*args)
-    #   request = new(*args)
-    #   yield request if block_given?
-    #   request.execute
-    # end
+    class << self
+      attr_accessor :endpoint
+    end
 
-    def initialize(connection, endpoint)
+    attr_reader :connection
+    
+    def self.execute(connection, opts={})
+      request = new(connection)
+      yield request if block_given?
+      request.execute(opts)
+    end
+
+    def initialize(connection)
       @connection = connection
-      @endpoint = endpoint
-      uri = URI::HTTP.build(host: connection.address, port: connection.port, path: endpoint.path)
-      super endpoint.request_method.new(uri)
-      self["Accept"] = endpoint.response_format
+      super build_request
+      set_defaults
+      post_initialize
     end
 
     def execute(opts={})
@@ -30,8 +31,29 @@ module Tika
           self.content_length = file.size
         end
         self.content_type = opts[:content_type] if opts[:content_type]
+        yield self if block_given?
         conn.request(__getobj__)
       end
+    end
+
+    def endpoint
+      self.class.endpoint
+    end
+
+    def uri
+      @uri ||= URI::HTTP.build(host: connection.address, port: connection.port, path: endpoint.path)
+    end
+
+    private
+
+    def post_initialize; end
+
+    def build_request
+      endpoint.request_method.new(uri)
+    end
+
+    def set_defaults
+      self["Accept"] = endpoint.response_format
     end
 
   end

@@ -1,11 +1,10 @@
 require_relative "configuration"
-require_relative "api"
-require_relative "request"
-require "forwardable"
+require_relative "requests"
 
 module Tika
   class Client
-    extend Forwardable
+
+    include Requests
 
     class << self
       def config
@@ -17,14 +16,22 @@ module Tika
       end
     end
 
-    attr_accessor :host, :port, :api
-    def_delegators :api, :endpoint, :has_endpoint?
+    attr_reader :host, :port
 
     def initialize(opts={})
       @host = opts.fetch(:host, config.host)
       @port = opts.fetch(:port, config.port)
-      @api = Api.new
     end
+
+    def get_text(opts={})
+      GetTextRequest.execute(connection, opts)
+    end
+
+    def get_metadata(opts={})
+      GetMetadataRequest.execute(connection, opts)
+    end
+
+    private
 
     def config
       self.class.config
@@ -32,16 +39,6 @@ module Tika
 
     def connection
       @connection ||= Net::HTTP.new(host, port)
-    end
-
-    def execute(name, opts={})
-      request = Request.new(connection, endpoint(name))
-      request.execute(opts)
-    end
-
-    def method_missing(name, *args)
-      return execute(name, *args) if has_endpoint?(name)
-      super
     end
 
   end
