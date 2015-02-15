@@ -44,6 +44,10 @@ module Tika
       GetParsersRequest.execute(connection)
     end
 
+    def get_parsers_details
+      GetParsersDetailsRequest.execute(connection)
+    end
+
     private
 
     def execute(request)

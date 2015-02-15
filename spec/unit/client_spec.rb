@@ -35,5 +35,11 @@ module Tika
       end
     end
 
+    describe "#get_parsers_details" do
+      it "should return the parsers available to the Tika server and the MIME types they support" do
+        expect(subject.get_parsers_details["name"]).to eq("org.apache.tika.parser.DefaultParser")
+      end
+    end
+
   end
 end
