@@ -1,3 +1,4 @@
+require "net/http"
 require_relative "configuration"
 require_relative "requests"
 
@@ -19,8 +20,8 @@ module Tika
     attr_reader :host, :port
 
     def initialize(opts={})
-      @host = opts.fetch(:host, config.host)
-      @port = opts.fetch(:port, config.port)
+      @host = opts.fetch(:host, self.class.config.host)
+      @port = opts.fetch(:port, self.class.config.port)
     end
 
     def get_text(opts={})
@@ -31,12 +32,28 @@ module Tika
       GetMetadataRequest.execute(connection, opts)
     end
 
-    private
-
-    def config
-      self.class.config
+    def get_version
+      GetVersionRequest.execute(connection)
     end
 
+    def get_mime_types
+      GetMimeTypesRequest.execute(connection)
+    end
+
+    def get_parsers
+      GetParsersRequest.execute(connection)
+    end
+
+    def get_parsers_details
+      GetParsersDetailsRequest.execute(connection)
+    end
+
+    def get_detectors
+      GetDetectorsRequest.execute(connection)
+    end
+
+    private
+    
     def connection
       @connection ||= Net::HTTP.new(host, port)
     end

@@ -1,4 +1,5 @@
 require "bundler/gem_tasks"
+require "rspec/core/rake_task"
 require "openssl"
 require "net/http"
 
@@ -36,7 +37,10 @@ namespace :tika do
 
   desc "Start Tika server"
   task :start do
-    if File.exists?(tika_path)
+    if File.exists?(PID_FILE)
+      pid = File.read(PID_FILE).strip
+      puts "Tika server is already running (PID #{pid})"
+    elsif File.exists?(tika_path)
       puts "Starting Tika server ..."
       File.open(PID_FILE, "w") do |pid_file|
         pid = fork { exec "java -jar #{tika_path}" }
@@ -74,3 +78,8 @@ end
 task :download_dir do
   FileUtils.mkdir(DOWNLOAD_DIR) unless Dir.exists?(DOWNLOAD_DIR)
 end
+
+desc "Run all specs in spec directory"
+RSpec::Core::RakeTask.new(:spec)
+
+task default: :spec

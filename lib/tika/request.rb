@@ -1,59 +1,79 @@
 require "uri"
-require "net/http"
 require "delegate"
 
 module Tika
   class Request < SimpleDelegator
 
     class << self
-      attr_accessor :endpoint
-    end
+      attr_accessor :http_method, :path
 
-    attr_reader :connection
-    
-    def self.execute(connection, opts={})
-      request = new(connection)
-      yield request if block_given?
-      request.execute(opts)
-    end
-
-    def initialize(connection)
-      @connection = connection
-      super build_request
-      set_defaults
-      post_initialize
-    end
-
-    def execute(opts={})
-      connection.start do |conn|
-        if file = opts.delete(:file)
-          self.body = file.read
-          self.content_length = file.size
-        end
-        self.content_type = opts[:content_type] if opts[:content_type]
-        yield self if block_given?
-        conn.request(__getobj__)
+      def headers
+        {}
       end
     end
 
-    def endpoint
-      self.class.endpoint
+    attr_reader :connection, :options
+    
+    def self.execute(connection, options={})
+      request = new(connection, options)
+      request.execute
+    end
+
+    def initialize(connection, options={})
+      @connection = connection
+      @options = options
+      super build_request
+      handle_options
+      post_initialize
+    end
+
+    def execute
+      response = connection.start { |conn| conn.request(__getobj__) }
+      handle_response(response)
     end
 
     def uri
-      @uri ||= URI::HTTP.build(host: connection.address, port: connection.port, path: endpoint.path)
+      @uri ||= URI::HTTP.build(host: connection.address, port: connection.port, path: self.class.path)
+    end
+
+    def handle_response(response)
+      response.body
     end
 
     private
 
+    def handle_options
+      add_file if file
+      set_content_type
+      add_headers
+    end
+
+    def set_content_type
+      self.content_type = options[:content_type] if options[:content_type]
+    end
+
+    def add_file
+      self.body = file.read
+      self.content_length = file.size
+    end
+
+    def file
+      options[:file]
+    end
+
+    def headers
+      @headers ||= self.class.headers.merge options.fetch(:headers, {})
+    end
+
+    def add_headers
+      headers.each { |header, value| self[header] = value }
+    end
+
+    # Subclass hook
     def post_initialize; end
 
     def build_request
-      endpoint.request_method.new(uri)
-    end
-
-    def set_defaults
-      self["Accept"] = endpoint.response_format
+      self.class.http_method.new(uri)
     end
 
   end
