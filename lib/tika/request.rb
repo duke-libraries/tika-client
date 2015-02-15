@@ -5,7 +5,11 @@ module Tika
   class Request < SimpleDelegator
 
     class << self
-      attr_accessor :endpoint, :headers, :response
+      attr_accessor :endpoint
+
+      def headers
+        {}
+      end
     end
 
     attr_reader :connection, :options
@@ -24,7 +28,8 @@ module Tika
     end
 
     def execute
-      self.class.response.new _execute
+      response = connection.start { |conn| conn.request(__getobj__) }
+      handle_response(response)
     end
 
     def endpoint
@@ -35,11 +40,11 @@ module Tika
       @uri ||= URI::HTTP.build(host: connection.address, port: connection.port, path: endpoint.path)
     end
 
-    private
-
-    def _execute
-      connection.start { |conn| conn.request(__getobj__) }
+    def handle_response(response)
+      response.body
     end
+
+    private
 
     def handle_options
       add_file if file
@@ -61,7 +66,7 @@ module Tika
     end
 
     def headers
-      @headers ||= (self.class.headers || {}).merge(options[:headers] || {})
+      @headers ||= self.class.headers.merge options.fetch(:headers, {})
     end
 
     def add_headers

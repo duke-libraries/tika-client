@@ -12,6 +12,7 @@ module Tika
     GetMetadataEndpoint   = Endpoint.new(PUT, "/meta")
     GetVersionEndpoint    = Endpoint.new(GET, "/version")
     GetMimeTypesEndpoint  = Endpoint.new(GET, "/mime-types")
+    GetParsersEndpoint    = Endpoint.new(GET, "/parsers")
 
   end
 end

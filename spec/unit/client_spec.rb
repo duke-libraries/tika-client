@@ -29,5 +29,11 @@ module Tika
       end
     end
 
+    describe "#get_parsers" do
+      it "should return the parsers available to the Tika server" do
+        expect(subject.get_parsers["name"]).to eq("org.apache.tika.parser.DefaultParser")
+      end
+    end
+
   end
 end

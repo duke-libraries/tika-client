@@ -1,31 +1,44 @@
+require "json"
 require_relative "endpoints"
-require_relative "responses"
 require_relative "request"
 
 module Tika
   module Requests
 
-    class GetTextRequest < Request
-      self.endpoint = Endpoints::GetTextEndpoint
-      self.headers = {"Accept" => "text/plain"}
-      self.response = Responses::GetTextResponse
+    class TextRequest < Request
+      def self.headers
+        {"Accept" => "text/plain"}
+      end
     end
 
-    class GetMetadataRequest < Request
+    class JSONRequest < Request
+      def self.headers
+        {"Accept" => "application/json"}
+      end
+
+      def handle_response(response)
+        JSON.load(response.body)
+      end
+    end
+
+    class GetTextRequest < TextRequest
+      self.endpoint = Endpoints::GetTextEndpoint
+    end
+
+    class GetMetadataRequest < JSONRequest
       self.endpoint = Endpoints::GetMetadataEndpoint
-      self.headers = {"Accept" => "application/json"}
-      self.response = Responses::GetMetadataResponse
     end
 
     class GetVersionRequest < Request
       self.endpoint = Endpoints::GetVersionEndpoint
-      self.response = Responses::GetVersionResponse
     end
 
-    class GetMimeTypesRequest < Request
+    class GetMimeTypesRequest < JSONRequest
       self.endpoint = Endpoints::GetMimeTypesEndpoint
-      self.headers = {"Accept" => "application/json"}
-      self.response = Responses::GetMimeTypesResponse
+    end
+
+    class GetParsersRequest < JSONRequest
+      self.endpoint = Endpoints::GetParsersEndpoint
     end
 
   end

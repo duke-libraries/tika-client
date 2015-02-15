@@ -26,23 +26,23 @@ module Tika
     end
 
     def get_text(opts={})
-      response = GetTextRequest.execute(connection, opts)
-      response.text
+      GetTextRequest.execute(connection, opts)
     end
 
     def get_metadata(opts={})
-      response = GetMetadataRequest.execute(connection, opts)
-      response.metadata
+      GetMetadataRequest.execute(connection, opts)
     end
 
     def get_version
-      response = GetVersionRequest.execute(connection)
-      response.version
+      GetVersionRequest.execute(connection)
     end
 
     def get_mime_types
-      response = GetMimeTypesRequest.execute(connection)
-      response.mime_types
+      GetMimeTypesRequest.execute(connection)
+    end
+
+    def get_parsers
+      GetParsersRequest.execute(connection)
     end
 
     private
