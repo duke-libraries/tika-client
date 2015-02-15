@@ -54,5 +54,10 @@ module Tika
       self.path        = "/parsers/details"
     end
 
+    class GetDetectorsRequest < JSONRequest
+      self.http_method = GET
+      self.path        = "/detectors"
+    end
+
   end
 end

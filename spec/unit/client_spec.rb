@@ -41,5 +41,11 @@ module Tika
       end
     end
 
+    describe "#get_detectors" do
+      it "should return the detectors available to the Tika server" do
+        expect(subject.get_detectors["name"]).to eq("org.apache.tika.detect.DefaultDetector")
+      end
+    end
+
   end
 end

@@ -20,8 +20,8 @@ module Tika
     attr_reader :host, :port
 
     def initialize(opts={})
-      @host = opts.fetch(:host, config.host)
-      @port = opts.fetch(:port, config.port)
+      @host = opts.fetch(:host, self.class.config.host)
+      @port = opts.fetch(:port, self.class.config.port)
     end
 
     def get_text(opts={})
@@ -48,17 +48,12 @@ module Tika
       GetParsersDetailsRequest.execute(connection)
     end
 
+    def get_detectors
+      GetDetectorsRequest.execute(connection)
+    end
+
     private
-
-    def execute(request)
-      http_response = connection.start { |conn| conn.request(request) }
-      Response.new http_response
-    end
     
-    def config
-      self.class.config
-    end
-
     def connection
       @connection ||= Net::HTTP.new(host, port)
     end
