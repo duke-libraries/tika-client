@@ -1,7 +1,6 @@
 require "net/http"
 require_relative "configuration"
 require_relative "requests"
-require_relative "response"
 
 module Tika
   class Client
