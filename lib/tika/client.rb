@@ -1,5 +1,7 @@
+require "net/http"
 require_relative "configuration"
 require_relative "requests"
+require_relative "response"
 
 module Tika
   class Client
@@ -24,15 +26,27 @@ module Tika
     end
 
     def get_text(opts={})
-      GetTextRequest.execute(connection, opts)
+      response = GetTextRequest.execute(connection, opts)
+      response.text
     end
 
     def get_metadata(opts={})
-      GetMetadataRequest.execute(connection, opts)
+      response = GetMetadataRequest.execute(connection, opts)
+      response.metadata
+    end
+
+    def get_version
+      response = GetVersionRequest.execute(connection)
+      response.version
     end
 
     private
 
+    def execute(request)
+      http_response = connection.start { |conn| conn.request(request) }
+      Response.new http_response
+    end
+    
     def config
       self.class.config
     end

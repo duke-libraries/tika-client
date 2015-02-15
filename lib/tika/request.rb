@@ -1,39 +1,30 @@
 require "uri"
-require "net/http"
 require "delegate"
 
 module Tika
   class Request < SimpleDelegator
 
     class << self
-      attr_accessor :endpoint
+      attr_accessor :endpoint, :headers, :response
     end
 
-    attr_reader :connection
+    attr_reader :connection, :options
     
-    def self.execute(connection, opts={})
-      request = new(connection)
-      yield request if block_given?
-      request.execute(opts)
+    def self.execute(connection, options={})
+      request = new(connection, options)
+      request.execute
     end
 
-    def initialize(connection)
+    def initialize(connection, options={})
       @connection = connection
+      @options = options
       super build_request
-      set_defaults
+      handle_options
       post_initialize
     end
 
-    def execute(opts={})
-      connection.start do |conn|
-        if file = opts.delete(:file)
-          self.body = file.read
-          self.content_length = file.size
-        end
-        self.content_type = opts[:content_type] if opts[:content_type]
-        yield self if block_given?
-        conn.request(__getobj__)
-      end
+    def execute
+      self.class.response.new _execute
     end
 
     def endpoint
@@ -46,14 +37,42 @@ module Tika
 
     private
 
+    def _execute
+      connection.start { |conn| conn.request(__getobj__) }
+    end
+
+    def handle_options
+      add_file if file
+      set_content_type
+      add_headers
+    end
+
+    def set_content_type
+      self.content_type = options[:content_type] if options[:content_type]
+    end
+
+    def add_file
+      self.body = file.read
+      self.content_length = file.size
+    end
+
+    def file
+      options[:file]
+    end
+
+    def headers
+      @headers ||= (self.class.headers || {}).merge(options[:headers] || {})
+    end
+
+    def add_headers
+      headers.each { |header, value| self[header] = value }
+    end
+
+    # Subclass hook
     def post_initialize; end
 
     def build_request
       endpoint.request_method.new(uri)
-    end
-
-    def set_defaults
-      self["Accept"] = endpoint.response_format
     end
 
   end

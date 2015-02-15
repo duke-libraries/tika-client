@@ -1,19 +1,26 @@
-require_relative "request"
 require_relative "endpoints"
+require_relative "responses"
+require_relative "request"
 
 module Tika
   module Requests
 
-    include Endpoints
-
-    def self.request_class(endpoint)
-      klass = Class.new(Request)
-      klass.endpoint = endpoint
-      klass
+    class GetTextRequest < Request
+      self.endpoint = Endpoints::GetTextEndpoint
+      self.headers = {"Accept" => "text/plain"}
+      self.response = Responses::GetTextResponse
     end
 
-    GetTextRequest     = request_class GetTextEndpoint
-    GetMetadataRequest = request_class GetMetadataEndpoint
+    class GetMetadataRequest < Request
+      self.endpoint = Endpoints::GetMetadataEndpoint
+      self.headers = {"Accept" => "application/json"}
+      self.response = Responses::GetMetadataResponse
+    end
+
+    class GetVersionRequest < Request
+      self.endpoint = Endpoints::GetVersionEndpoint
+      self.response = Responses::GetVersionResponse
+    end
 
   end
 end

@@ -5,14 +5,12 @@ module Tika
 
     PUT = Net::HTTP::Put
     GET = Net::HTTP::Get
-
-    JSON = "application/json"
-    TEXT = "text/plain"
     
-    Endpoint = Struct.new(:request_method, :path, :response_format)
+    Endpoint = Struct.new(:request_method, :path)
 
-    GetTextEndpoint     = Endpoint.new(PUT, "/tika", TEXT)
-    GetMetadataEndpoint = Endpoint.new(PUT, "/meta", JSON)
+    GetTextEndpoint     = Endpoint.new(PUT, "/tika")
+    GetMetadataEndpoint = Endpoint.new(PUT, "/meta")
+    GetVersionEndpoint  = Endpoint.new(GET, "/version")
 
   end
 end
