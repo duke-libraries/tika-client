@@ -8,9 +8,10 @@ module Tika
     
     Endpoint = Struct.new(:request_method, :path)
 
-    GetTextEndpoint     = Endpoint.new(PUT, "/tika")
-    GetMetadataEndpoint = Endpoint.new(PUT, "/meta")
-    GetVersionEndpoint  = Endpoint.new(GET, "/version")
+    GetTextEndpoint       = Endpoint.new(PUT, "/tika")
+    GetMetadataEndpoint   = Endpoint.new(PUT, "/meta")
+    GetVersionEndpoint    = Endpoint.new(GET, "/version")
+    GetMimeTypesEndpoint  = Endpoint.new(GET, "/mime-types")
 
   end
 end

@@ -40,6 +40,11 @@ module Tika
       response.version
     end
 
+    def get_mime_types
+      response = GetMimeTypesRequest.execute(connection)
+      response.mime_types
+    end
+
     private
 
     def execute(request)

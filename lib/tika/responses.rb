@@ -22,5 +22,11 @@ module Tika
       end
     end
 
+    class GetMimeTypesResponse < Response
+      def mime_types
+        JSON.load(content)
+      end
+    end
+
   end
 end

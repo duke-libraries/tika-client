@@ -22,5 +22,11 @@ module Tika
       self.response = Responses::GetVersionResponse
     end
 
+    class GetMimeTypesRequest < Request
+      self.endpoint = Endpoints::GetMimeTypesEndpoint
+      self.headers = {"Accept" => "application/json"}
+      self.response = Responses::GetMimeTypesResponse
+    end
+
   end
 end

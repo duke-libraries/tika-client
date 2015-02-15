@@ -18,8 +18,14 @@ module Tika
     end
 
     describe "#get_version" do
-      it "should return the Apache Tika server version" do
+      it "should return the Tika server version" do
         expect(subject.get_version).to match(/^Apache Tika/)
+      end
+    end
+
+    describe "#get_mime_types" do
+      it "should return the MIME Types support by the Tika server" do
+        expect(subject.get_mime_types).to have_key("application/pdf")
       end
     end
 
