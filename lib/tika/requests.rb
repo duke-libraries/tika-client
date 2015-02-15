@@ -1,9 +1,12 @@
 require "json"
-require_relative "endpoints"
+require "net/http"
 require_relative "request"
 
 module Tika
   module Requests
+
+    PUT = Net::HTTP::Put
+    GET = Net::HTTP::Get
 
     class TextRequest < Request
       def self.headers
@@ -22,23 +25,28 @@ module Tika
     end
 
     class GetTextRequest < TextRequest
-      self.endpoint = Endpoints::GetTextEndpoint
+      self.http_method = PUT
+      self.path        = "/tika"
     end
 
     class GetMetadataRequest < JSONRequest
-      self.endpoint = Endpoints::GetMetadataEndpoint
+      self.http_method = PUT
+      self.path        = "/meta"
     end
 
     class GetVersionRequest < Request
-      self.endpoint = Endpoints::GetVersionEndpoint
+      self.http_method = GET
+      self.path        = "/version"
     end
 
     class GetMimeTypesRequest < JSONRequest
-      self.endpoint = Endpoints::GetMimeTypesEndpoint
+      self.http_method = GET
+      self.path        = "/mime-types"
     end
 
     class GetParsersRequest < JSONRequest
-      self.endpoint = Endpoints::GetParsersEndpoint
+      self.http_method = GET
+      self.path        = "/parsers"
     end
 
   end

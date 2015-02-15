@@ -5,7 +5,7 @@ module Tika
   class Request < SimpleDelegator
 
     class << self
-      attr_accessor :endpoint
+      attr_accessor :http_method, :path
 
       def headers
         {}
@@ -32,12 +32,8 @@ module Tika
       handle_response(response)
     end
 
-    def endpoint
-      self.class.endpoint
-    end
-
     def uri
-      @uri ||= URI::HTTP.build(host: connection.address, port: connection.port, path: endpoint.path)
+      @uri ||= URI::HTTP.build(host: connection.address, port: connection.port, path: self.class.path)
     end
 
     def handle_response(response)
@@ -77,7 +73,7 @@ module Tika
     def post_initialize; end
 
     def build_request
-      endpoint.request_method.new(uri)
+      self.class.http_method.new(uri)
     end
 
   end
