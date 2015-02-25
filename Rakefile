@@ -75,6 +75,16 @@ namespace :tika do
   end
 end
 
+desc "Run CI tests"
+task :ci => ["tika:start"] do
+  sleep 15
+  begin
+    Rake::Task[:spec].invoke
+  ensure
+    Rake::Task["tika:stop"].invoke
+  end
+end
+
 task :download_dir do
   FileUtils.mkdir(DOWNLOAD_DIR) unless Dir.exists?(DOWNLOAD_DIR)
 end
