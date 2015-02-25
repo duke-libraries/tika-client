@@ -47,5 +47,12 @@ module Tika
       end
     end
 
+    describe "#detect" do
+      let(:file) { File.new(File.join(FIXTURE_DIR, "Lorem_ipsum.png")) }
+      it "should return the MIME type of the resource (if successful)" do
+        expect(subject.detect(file: file)).to eq("image/png")
+      end
+    end
+
   end
 end
