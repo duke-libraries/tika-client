@@ -52,6 +52,10 @@ module Tika
       GetDetectorsRequest.execute(connection)
     end
 
+    def detect(opts={})
+      DetectRequest.execute(connection, opts)
+    end
+
     private
     
     def connection

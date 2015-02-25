@@ -59,5 +59,10 @@ module Tika
       self.path        = "/detectors"
     end
 
+    class DetectRequest < Request
+      self.http_method = PUT
+      self.path        = "/detect/stream"
+    end
+
   end
 end

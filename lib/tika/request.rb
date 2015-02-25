@@ -55,6 +55,7 @@ module Tika
     def add_file
       self.body = file.read
       self.content_length = file.size
+      self["Content-Disposition"] = "attachment; filename=#{File.basename(file.path)}"
     end
 
     def file
