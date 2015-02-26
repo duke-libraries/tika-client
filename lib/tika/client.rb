@@ -25,41 +25,45 @@ module Tika
     end
 
     def get_text(opts={})
-      GetTextRequest.execute(connection, opts)
+      execute GetTextRequest, opts
     end
 
     def get_metadata(opts={})
-      GetMetadataRequest.execute(connection, opts)
+      execute GetMetadataRequest, opts
     end
 
     def get_version
-      GetVersionRequest.execute(connection)
+      execute GetVersionRequest
     end
 
     def get_mime_types
-      GetMimeTypesRequest.execute(connection)
+      execute GetMimeTypesRequest
     end
 
     def get_parsers
-      GetParsersRequest.execute(connection)
+      execute GetParsersRequest
     end
 
     def get_parsers_details
-      GetParsersDetailsRequest.execute(connection)
+      execute GetParsersDetailsRequest
     end
 
     def get_detectors
-      GetDetectorsRequest.execute(connection)
+      execute GetDetectorsRequest
     end
 
     def detect(opts={})
-      DetectRequest.execute(connection, opts)
+      execute DetectRequest, opts
     end
 
     private
     
     def connection
       @connection ||= Net::HTTP.new(host, port)
+    end
+
+    def execute(request, opts={})
+      request.execute(connection, opts)
     end
 
   end
