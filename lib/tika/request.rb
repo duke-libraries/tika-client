@@ -1,5 +1,6 @@
 require "uri"
 require "delegate"
+require_relative "options"
 
 module Tika
   class Request < SimpleDelegator
@@ -21,7 +22,7 @@ module Tika
 
     def initialize(connection, options={})
       @connection = connection
-      @options = options
+      @options = Options.new(options)
       super build_request
       handle_options
       post_initialize
@@ -43,27 +44,36 @@ module Tika
     private
 
     def handle_options
-      add_file if file
+      add_content
       set_content_type
       add_headers
     end
 
     def set_content_type
-      self.content_type = options[:content_type] if options[:content_type]
+      self.content_type = options.content_type if options.content_type
+    end
+
+    def add_content
+      if options.file
+        add_file
+      elsif options.blob
+        add_blob
+      end
     end
 
     def add_file
-      self.body = file.read
-      self.content_length = file.size
-      self["Content-Disposition"] = "attachment; filename=#{File.basename(file.path)}"
+      self.body = options.file.read
+      self.content_length = options.file.size
+      self["Content-Disposition"] = "attachment; filename=#{File.basename(options.file.path)}"
     end
 
-    def file
-      options[:file]
+    def add_blob
+      self.body = options.blob
+      self.content_length = options.blob.size
     end
 
     def headers
-      @headers ||= self.class.headers.merge options.fetch(:headers, {})
+      @headers ||= self.class.headers.merge(options.headers || {})
     end
 
     def add_headers
