@@ -7,6 +7,10 @@ module Tika
         text = subject.get_text(file: file, content_type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
         expect(text).to match(/^Lorem ipsum/)
       end
+      it "should accept a blob" do
+        text = subject.get_text(blob: file.read, content_type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+        expect(text).to match(/^Lorem ipsum/)
+      end
     end
 
     describe "#get_metadata" do
